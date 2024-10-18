@@ -32,6 +32,6 @@ jobs:
 
       - name: Build and publish npm package
         run: |
-          pnpm --filter=vite-plugin-canyon publish -f --no-git-checks --access=public --filter
+          pnpm --filter=swc-plugin-canyon publish -f --no-git-checks --access=public --filter
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
