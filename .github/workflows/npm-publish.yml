@@ -41,6 +41,6 @@ jobs:
 
       - name:  Publish to npm
         run: |
-          pnpm --filter=canyon-report publish -f --no-git-checks --access=public --filter
+          pnpm --filter=swc-plugin-canyon publish -f --no-git-checks --access=public --filter
         env:
           NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
