@@ -39,11 +39,9 @@ jobs:
         run: |
           rustup target add wasm32-wasi
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: pnpm publish -r --access public
+      - name:  Publish to npm
+        uses: pnpm/action-publish@v1
+        run: pnpm publish --access public --no-git-checks
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
