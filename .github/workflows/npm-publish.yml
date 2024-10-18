@@ -41,7 +41,6 @@ jobs:
 
       - name:  Publish to npm
         run: |
-          pnpm run build
           pnpm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
