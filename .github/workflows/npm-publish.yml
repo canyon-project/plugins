@@ -29,8 +29,3 @@ jobs:
         shell: bash
         run: |
           rustup target add wasm32-wasi
-
-      - name: Pnpm
-      - run: pnpm --filter=swc-plugin-canyon publish -f --no-git-checks --access=public --filter
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
