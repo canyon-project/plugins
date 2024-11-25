@@ -1,10 +1,26 @@
 {
-  "name": "swc-plugins",
-  "packageManager": "pnpm@8.6.3",
-  "private": true,
+  "name": "canyon",
+  "version": "2.0.0",
+  "description": "Canyon is a JavaScript code coverage solution",
+  "author": "wr.zhang25@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "build": "turbo build",
+    "build:report": "turbo build:report",
+    "start:platform": "turbo start:platform",
+    "dev": "turbo dev",
+    "clean": "node ./scripts/clean.mjs",
+    "preinstall": "node ./scripts/check.mjs",
+    "format": "biome check --write --unsafe"
+  },
+  "packageManager": "pnpm@9.14.2",
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "@taplo/cli": "^0.7.0",
-    "prettier": "^3.2.5"
+    "@biomejs/biome": "1.9.4",
+    "pnpm": "^9.14.2",
+    "turbo": "latest",
+    "typescript": "latest",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^9.1.6"
   }
 }
