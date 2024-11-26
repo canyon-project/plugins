@@ -20,7 +20,3 @@ jobs:
       - run: pnpm --filter=vite-plugin-canyon2 publish -f --no-git-checks --access=public --filter
         env:
           NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
-      - run: |
-          pnpm dist-tag add vite-plugin-canyon2@0.0.1-alpha.15 latest
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
