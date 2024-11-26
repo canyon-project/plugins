@@ -7,4 +7,5 @@ export default defineBuildConfig({
   clean: true,
   declaration: true,
   externals: ['@swc/core'],  // 排除 @swc/core 依赖
+  failOnWarn:false
 });
