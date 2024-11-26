@@ -6,8 +6,5 @@ export default defineBuildConfig({
   ],
   clean: true,
   declaration: true,
-  rollup: {
-    emitCJS: true,
-    inlineDependencies: true,
-  },
+  externals: ['@swc/core'],  // 排除 @swc/core 依赖
 });

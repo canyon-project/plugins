@@ -1,5 +1,5 @@
 {
-  "name": "vite-plugin-canyon",
+  "name": "vite-plugin-canyon2",
   "version": "0.0.1-beta.3",
   "license": "MIT",
   "files": [
@@ -30,11 +30,12 @@
     "canyon"
   ],
   "dependencies": {
-    "picocolors": "^1.0.0",
     "@babel/generator": "^7.26.2",
     "@babel/parser": "^7.26.2",
     "@babel/traverse": "^7.25.9",
-    "@babel/types": "^7.26.0"
+    "@babel/types": "^7.26.0",
+    "picocolors": "^1.0.0",
+    "@swc/core": "^1.9.3"
   },
   "peerDependencies": {
     "vite": ">=2.9.1"

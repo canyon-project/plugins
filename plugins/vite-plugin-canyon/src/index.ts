@@ -1,73 +1,68 @@
-import { parse } from '@babel/parser';
-// @ts-ignore
-import _traverse from '@babel/traverse';
-// @ts-ignore
-import _generator from '@babel/generator';
-
-import {visitorProgramExit} from "./visitor-program-exit";
-import {detectProvider} from "./helpers/provider";
-
-const { default: traverse } = _traverse;
-const { default: generate } = _generator;
+// 不检查ts
+// @ts-nocheck
+import {transformSync, parse, print, printSync, parseSync} from "@swc/core";
+import { detectProvider } from "./helpers/provider";
 
 function resolveFilename(id: string): string {
-  // To remove the annoying query parameters from the filename
-  const [filename] = id.split('?vue');
-  return id;
+  const [filename] = id.split("?vue");
+  return filename;
 }
 
 export default function VitePluginInstrumentation() {
   return {
-    name: 'vite-plugin-instrumentation',
-    enforce: 'post',
-    // @ts-ignore
+    name: "vite-plugin-instrumentation",
+    enforce: "post",
     transform(code, id) {
-      // 解析代码为 AST
-      const ast = parse(code, {
-        sourceType: 'module',
-        plugins: ['typescript'],
-      });
-
-      // 侦测流水线
-      // 优先级：手动设置 > CI/CD提供商
-      // hit需要打到__coverage__中，因为ui自动化测试工具部署地方不确定
-      // map就不需要，写到本地时，可以侦测本地流水线变量，直接上报上来
-      // 他的职责只是寻找到项目，和插桩路径
       const serviceParams = detectProvider({
         envs: process.env,
-        // @ts-ignore
-        args: {
-          // projectID: config.projectID,
-          // sha: config.sha,
-          // instrumentCwd: config.instrumentCwd,
-          // branch: config.branch,
-        }
-      })
-
-      // console.log(serviceParams,'serviceParams')
-      // 遍历和修改 AST
-      traverse(ast, {
-        Program: {
-          // @ts-ignore
-          exit(path) {
-            // 在 Program 节点的退出时执行
-            visitorProgramExit(undefined, path, {
-              projectID: serviceParams.slug||'-',
-              sha: serviceParams.commit||'-',
-              instrumentCwd: process.cwd(),
-              dsn: process.env['DSN']||'-'
-            });
-          },
-        },
+        args: {},
       });
 
-      // 将修改后的 AST 转换回代码
-      const output = generate(ast, {}, code);
+      try {
+        // 使用 SWC 解析代码
+        const ast = parseSync(code, { syntax: "ecmascript" });
 
-      return {
-        code: output.code,
-        // map: output.map, // 如果需要 Source Map，可以启用
-      };
+
+// 递归遍历并修改 AST
+        function removeSPropertyFromCoverageData(node) {
+          if (node.type === "VariableDeclarator" && node.id.value === "coverageData") {
+            if (node.init && node.init.type === "ObjectExpression") {
+              // 移除 `s` 属性
+              node.init.properties = node.init.properties.filter(
+                  (prop) => prop.key.value !== "branchMap"&&prop.key.value !== "statementMap"&&prop.key.value !== "fnMap"
+              );
+            }
+          }
+          return node;
+        }
+
+        function traverse(node, visitor) {
+          for (const key in node) {
+            if (Array.isArray(node[key])) {
+              node[key] = node[key].map((child) => traverse(child, visitor));
+            } else if (node[key] && typeof node[key] === "object") {
+              node[key] = traverse(node[key], visitor);
+            }
+          }
+          return visitor(node);
+        }
+        // 将 AST 转换回代码
+// 修改 AST
+        const modifiedAst = traverse(ast, removeSPropertyFromCoverageData);
+
+// 将修改后的 AST 转回代码
+        const { code: outputCode } = printSync(modifiedAst);
+
+
+        return {
+          code: outputCode,
+          // 如果需要 Source Map，可以开启以下代码：
+          // map: null, // 提供 Source Map 数据
+        };
+      } catch (err) {
+        this.error(`Failed to transform file: ${resolveFilename(id)}\n${err}`);
+        return null;
+      }
     },
   };
 }
